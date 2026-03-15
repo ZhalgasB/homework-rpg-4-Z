@@ -14,20 +14,50 @@ public class RaidEngine {
     }
 
     public RaidResult runRaid(CombatNode teamA, CombatNode teamB, Skill teamASkill, Skill teamBSkill) {
-        // TODO: Validate inputs (null checks, alive checks, required skills).
-        // TODO: Implement round-based simulation:
-        // 1) Team A casts on Team B
-        // 2) Team B casts on Team A (if still alive)
-        // 3) Track rounds and log each step
-        // 4) Stop when one team is defeated (or max rounds reached)
-        //
-        // Optional extension:
-        // Use random for critical strikes or other deterministic events.
-        // Example: boolean critA = random.nextInt(100) < 10;
+        if (teamA == null || teamB == null || teamASkill == null || teamBSkill == null){
+            throw new IllegalArgumentException("Cannot be null");
+        }
+
+
         RaidResult result = new RaidResult();
-        result.setRounds(0);
-        result.setWinner("TBD");
-        result.addLine("TODO: implement raid simulation");
+        result.addLine("Battle is stared" + teamA.getName() +  " vs " + teamB.getName());
+        result.addLine("Skill A: " + teamASkill.getSkillName() + teamASkill.getEffectName());
+        result.addLine("Skill B: " + teamBSkill.getSkillName() + teamBSkill.getEffectName());
+        int round = 0;
+        final int maxRounds = 50;
+
+        while (teamA.isAlive() && teamB.isAlive() && round < maxRounds){
+            round++;
+
+            result.addLine("Round: " + round);
+
+            if (teamA.isAlive()){
+                result.addLine(teamA.getName() + "is attacking");
+                teamASkill.cast(teamB);
+            }
+            if (teamB.isAlive()){
+                break;
+            }
+            if (teamB.isAlive()){
+                result.addLine(teamB.getName() + "is attacking");
+                teamBSkill.cast(teamA);
+            }
+
+        }
+
+
+        result.setRounds(round);
+
+        String winner;
+
+        if (teamA.isAlive()){
+            winner = teamA.getName();
+        }
+        else winner = teamB.getName();
+
+
+        result.setWinner(winner);
+        result.addLine("Winner is : " + winner +  " "  +  "after: " + round + "rounds");
         return result;
     }
 }
